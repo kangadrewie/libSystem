@@ -19,25 +19,22 @@ class AddBook():
 
 def searchBook(libCatalog, value):
 	fetchCounter = 0
+	columnIndex = 0
 	# Search Index Number
 	for key in libCatalog:
 		if value in key:
 			fetchResults[key] = [libCatalog[key][0], libCatalog[key][1], libCatalog[key][2], libCatalog[key][3]]
 	# Search Book Title
-	for key in libCatalog:
-		if value in libCatalog[key][0]:
+		elif value in libCatalog[key][0]:
 			fetchResults[key] = [libCatalog[key][0], libCatalog[key][1], libCatalog[key][2], libCatalog[key][3]]
 	# Search Book Author
-	for key in libCatalog:
-		if value in libCatalog[key][1]:
+		elif value in libCatalog[key][1]:
 			fetchResults[key] = [libCatalog[key][0], libCatalog[key][1], libCatalog[key][2], libCatalog[key][3]]
 	# Search Book Release Date
-	for key in libCatalog:
-		if libCatalog[key][2] == value:
+		elif libCatalog[key][2] == value:
 			fetchResults[key] = [libCatalog[key][0], libCatalog[key][1], libCatalog[key][2], libCatalog[key][3]]
 	# Search Book Genre
-	for key in libCatalog:
-		if value in libCatalog[key][3]:
+		elif value in libCatalog[key][3]:
 			fetchResults[key] = [libCatalog[key][0], libCatalog[key][1], libCatalog[key][2], libCatalog[key][3]]
 	# Error Checking
 	
