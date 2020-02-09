@@ -32,8 +32,6 @@ def searchBook(libCatalog, value):
 				else:
 					index += 1
 
-	# Error Checking
-	
 	for key in fetchResults:
 		print(' Book Number:', key,'\n',
 				'Book Title:', fetchResults[key][0],'\n',
@@ -43,17 +41,6 @@ def searchBook(libCatalog, value):
 		fetchCounter += 1
 
 	return print(fetchCounter, 'Results Found')
-
-			# print(' Book Number:', key,'\n',
-			# 	'Book Title:', libCatalog[key][0],'\n',
-			# 	'Book Author:', libCatalog[key][1],'\n',
-			# 	'Book Release Date:', libCatalog[key][2],'\n',
-			# 	'Book Genre:', libCatalog[key][3],'\n')
-
-# WHAT DO YOU WANT TO DO
-# ADD
-# FIND
-
 
 key1001 = AddBook('1001', 'Now Read This', 'Nancy Pearl', '2018', 'Kids Fiction')
 key1002 = AddBook('1002', 'Becoming Fiction', 'Michelle Obama', '2018', 'Autobiography Fiction')
