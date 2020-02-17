@@ -1,55 +1,92 @@
+import sys
+
 libCatalog = dict()
-fetchResults = dict()
+fetchedResults = dict()
+line_break = '-------------------------------------------'
 
+def add_book(key, bookTitle, bookAuthor, bookReleaseDate, bookGenre, bookQuantity):
+	libCatalog[key] = [bookTitle, bookAuthor, bookReleaseDate, bookGenre, bookQuantity]
 
-class AddBook():
-	# Class constructor
-	def __init__(self, key, bookTitle, bookAuthor, bookReleaseDate, bookGenre):
-		self.key = key
-		self.bookTitle = bookTitle
-		self.bookAuthor = bookAuthor
-		self.bookReleaseDate = bookReleaseDate
-		self.bookGenre = bookGenre
+def add_to_catalog():
+	print(line_break)
+	print('ADD BOOK\n')
+	for i in range(1):
+		key = input('Book ISBN: ')
+		bookTitle = input('Book Title: ')
+		bookAuthor = input('Book Author: ')
+		bookReleaseDate = input('Book Release Date: ')
+		bookGenre = input('Book Genre: ')
+		bookQuantity = input('Book Quantity: ')
 
-	# Adds book to Catalog
-	def addBook(self):
-		libCatalog[self.key] = [self.bookTitle, self.bookAuthor, self.bookReleaseDate, self.bookGenre]
+		add_book(key, bookTitle, bookAuthor, bookReleaseDate, bookGenre, bookQuantity)
+		print('\nBook', key, 'has been added to Catalog.\n')
 
+def get_catalog():
+	print(line_break)
+	for key in libCatalog:
+		print('\n ISBN:', key,'\n',
+			'Book Title:', libCatalog[key][0],'\n',
+			'Book Author:', libCatalog[key][1],'\n',
+			'Book Release Date:', libCatalog[key][2],'\n',
+			'Book Genre:', libCatalog[key][3],'\n'
+			' Book Quantity:', libCatalog[key][4],'\n')
 
-
-def searchBook(libCatalog, value):
+def search_catalog(libCatalog, value):
+	print(line_break)
+	print('SEARCH CATALOG')
 	fetchCounter = 0
 
 	for key in libCatalog:
 		index = 0
-		if value in key:
-			fetchResults[key] = [libCatalog[key][0], libCatalog[key][1], libCatalog[key][2], libCatalog[key][3]]
+		if value == key:
+			fetchedResults[key] = [libCatalog[key][0], libCatalog[key][1], libCatalog[key][2], libCatalog[key][3], libCatalog[key][4]]
 		else:
-			while index < 4:
+			while index < len(libCatalog[key]):
 				if value in libCatalog[key][index]:
-					fetchResults[key] = [libCatalog[key][0], libCatalog[key][1], libCatalog[key][2], libCatalog[key][3]]
+					fetchedResults[key] = [libCatalog[key][0], libCatalog[key][1], libCatalog[key][2], libCatalog[key][3], libCatalog[key][4]]
 					index += 1
 				else:
 					index += 1
 
-	for key in fetchResults:
-		print(' Book Number:', key,'\n',
-				'Book Title:', fetchResults[key][0],'\n',
-				'Book Author:', fetchResults[key][1],'\n',
-				'Book Release Date:', fetchResults[key][2],'\n',
-				'Book Genre:', fetchResults[key][3],'\n')
+	for key in fetchedResults:
+		print('\n Book Number:', key,'\n',
+				'Book Title:', fetchedResults[key][0],'\n',
+				'Book Author:', fetchedResults[key][1],'\n',
+				'Book Release Date:', fetchedResults[key][2],'\n',
+				'Book Genre:', fetchedResults[key][3],'\n'
+				'Book Quanity:', fetchedResults[key][4],'\n')
 		fetchCounter += 1
 
-	return print(fetchCounter, 'Results Found')
+	return print(fetchCounter, 'Results Found\n', line_break) 
 
-key1001 = AddBook('1001', 'Now Read This', 'Nancy Pearl', '2018', 'Kids Fiction')
-key1002 = AddBook('1002', 'Becoming Fiction', 'Michelle Obama', '2018', 'Autobiography Fiction')
-key1003 = AddBook('1003', 'To Kill A Mocking Bird', 'Harper Lee', '1960', 'Novel')
-key1001.addBook()
-key1002.addBook()
-key1003.addBook()
+key1001 = add_book('1001', 'Now Read This', 'Nancy Pearl', '2018', 'Kids Fiction', '8')
+key1002 = add_book('1002', 'Becoming Fiction', 'Michelle Obama', '2018', 'Autobiography Fiction', '15')
+key1003 = add_book('1003', 'To Kill A Mocking Bird', 'Harper Lee', '1960', 'Novel', '4')
 
-# print(libCatalog)
+def gui():
+	initialise = input('\nPress A to add Book: \nPress S to Search Catalog: \nPress V to view Catalog: \nPress Z to cancel: \n\nOption:').upper()
 
-char = str(input('Search Catalog: '))
-searchBook(libCatalog, char)
+	if initialise == 'A':
+		add_to_catalog()
+		option = input('Would you like to add an additional book? Y/N\n').upper()
+		if option == 'Y':
+			add_to_catalog()
+		elif option != 'Y':
+			gui()
+
+
+	elif initialise == 'S':
+		value = input('Search Catalog: ')
+		search_catalog(libCatalog, value)
+		gui()
+
+	elif initialise == 'V':
+		get_catalog()
+		print(len(libCatalog), 'Results Found')
+		print(line_break)
+		gui()
+
+	elif initialise == 'Z':
+		sys.exit(0)
+
+gui()

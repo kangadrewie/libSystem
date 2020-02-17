@@ -1,0 +1,18 @@
+Users must be able to borrow books
+When user borrows books the quanity must be - 1
+When quantity reaches zero, program must notify user and not allow them to borrow
+
+
+ISBN is unique identifier
+No need to use objects and classes
+
+Functionality 
+	- Small libary of three books, can be hardcoded
+	- Implement function to provide details, format output ie. Book Title: etc
+	- Implement function to add new book, ask for details and how many copies
+	- If ISBN already exists, provide error
+	- Implement function to borrow book, decrease quanity by - 1
+	- Implement function to search library
+	- Include error checking, letter instead of number etc
+	- Use comments in code
+	
