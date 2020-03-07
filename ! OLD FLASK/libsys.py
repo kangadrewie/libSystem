@@ -62,31 +62,3 @@ def search_catalog(libCatalog, value):
 key1001 = add_book('1001', 'Now Read This', 'Nancy Pearl', '2018', 'Kids Fiction', '8')
 key1002 = add_book('1002', 'Becoming Fiction', 'Michelle Obama', '2018', 'Autobiography Fiction', '15')
 key1003 = add_book('1003', 'To Kill A Mocking Bird', 'Harper Lee', '1960', 'Novel', '4')
-
-def gui():
-	initialise = input('\nPress A to add Book: \nPress S to Search Catalog: \nPress V to view Catalog: \nPress Z to cancel: \n\nOption:').upper()
-
-	if initialise == 'A':
-		add_to_catalog()
-		option = input('Would you like to add an additional book? Y/N\n').upper()
-		if option == 'Y':
-			add_to_catalog()
-		elif option != 'Y':
-			gui()
-
-
-	elif initialise == 'S':
-		value = input('Search Catalog: ')
-		search_catalog(libCatalog, value)
-		gui()
-
-	elif initialise == 'V':
-		get_catalog()
-		print(len(libCatalog), 'Results Found')
-		print(line_break)
-		gui()
-
-	elif initialise == 'Z':
-		sys.exit(0)
-
-gui()

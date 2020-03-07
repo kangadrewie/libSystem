@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Library System</title>
+	<link rel="stylesheet" href="/static/css/styles.css/">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="/static/scripts.js"></script>
+</head>
+<body >
+
+<section id="home_container">
+	<div id="searchContainer">
+		<div class="search" id="search">
+			<form>
+				<input type="text" name="jobTitle" class="searchTerm" id="searchTerm" placeholder="What are you looking for?" required="text">
+				<button class="searchButton" id="searchButton">
+					<i class="fa fa-search"></i>
+				</button>
+			</form>
+		</div>
+	</div>
+
+	<table id="library" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>IBSN</th>
+                <th>Book Title</th>
+                <th>Author</th>
+                <th>Release Date</th>
+                <th>Book Genre</th>
+                <th>Available Quantity</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>IBSN</th>
+                <th>Book Title</th>
+                <th>Author</th>
+                <th>Release Date</th>
+                <th>Book Genre</th>
+                <th>Available Quantity</th>
+            </tr>
+        </tfoot>
+    </table>
+<!-- 	<div class="lds-ellipsis" id="loadIcon"><div></div><div></div><div></div><div></div></div>
+ --></section>
+
+
+
+</body>
+</html>
