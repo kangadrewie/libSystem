@@ -16,28 +16,31 @@ line_break = '-' * 40
 '''
 HOW TO USE
 
-Libsys.py is a shell script that can be run in terminal or IDE. It's functionality ranges from
-	- Automatic ISBN Search retrieval using Open Library's RESTful API
-	- Manual Book Import
-	- Add/Edit/Delete Books
-	- Add/Edit/Delete Members
-	- Recursive Search Feature
-	- All Users can Borrow and Return Book
+	Libsys.py is a shell script that can be run in terminal or IDE. It's functionality ranges from
+		- Automatic ISBN Search retrieval using Open Library's RESTful API
+		- Manual Book Import
+		- Add/Edit/Delete Books
+		- Add/Edit/Delete Members
+		- Recursive Search Feature
+		- All Users can Borrow and Return Book
 
-Prior to using, users must install pick by pip install pick.
-Pick a lightweight library that is used to help create curses based interactive selection list in the terminal.
-Documentation can be found here - https://pypi.org/project/pick/
+	Prior to using, users must install pick by pip install pick.
+	Pick a lightweight library that is used to help create curses based interactive selection list in the terminal.
+	Documentation can be found here - https://pypi.org/project/pick/
+____________________________________________________
 
-Users have two options to add a book.
+ADDING A BOOK
 
-	- First is manually entering the books details incl. ISBN, Title, Author, Release Date, and Quantity, by Add Book > Manually Add Book. This is then stored in a libCatalog dict.
+	Users have two options to add a book.
 
-	- Alternatively, users can Add Book > Automatic ISBN Search which will search Open Librarys RESTful API and return the above information.
+		- First is manually entering the books details incl. ISBN, Title, Author, Release Date, and Quantity, by Add Book > Manually Add Book. This is then stored in a libCatalog dict.
 
-	Data is returned in JSON format, then parse and stored in library catalog dictionary.
+		- Alternatively, users can Add Book > Automatic ISBN Search which will search Open Librarys RESTful API and return the above information.
 
-	Exceptions are configured to catch any ISBN that returns no data. Or is simply invalid ie. KeyError, ValueError.
-'''
+		Data is returned in JSON format, then parse and stored in library catalog dictionary.
+
+		Exceptions are configured to catch any ISBN that returns no data. Or is simply invalid ie. KeyError, ValueError.
+____________________________________________________'''
 
 def add_book(key, bookTitle, bookAuthor, bookReleaseDate, bookQuantity):
 	libCatalog[key] = [bookTitle.upper(), bookAuthor.upper(), bookReleaseDate.upper(), bookQuantity]
@@ -154,12 +157,16 @@ def get_catalog():
 
 
 """
-Search feature is suitable for various searches, not exclusively IBSN codes. It recursively searches each book to find match. If search value is not an ISBN key, it will search across the columns to find a match. If not match is found, it will continue onto next book, and repeat.
+SEARCHING A BOOK
 
-Any books matched will be temporarily added to a fetchResults dict and will increment a counter, giving total results found. This is what is returned to User.
+	The Search feature is build to suport a variety of searches, not exclusively IBSN codes. It recursively searches each book to find match. If search value is not an ISBN key, it will search across the columns to find a match. If not match is found, it will continue onto next book, and repeat.
 
-Books that have been returned from search, can be borrowed/returned/edited and deleted by selecting specifc book.
-"""
+	Any books matched will be temporarily added to a fetchResults dict and will increment a counter, giving total results found. This is what is returned to User. 
+
+	Case sensitive is handled by all existing data and input values being made uppercase.
+
+	Books that have been returned from search, can be borrowed/returned/edited and deleted by selecting specifc book.
+____________________________________________________"""
 
 def search_catalog(libCatalog, value):
 
@@ -207,14 +214,23 @@ def search_catalog(libCatalog, value):
 			menu()
 		
 '''
-User can borrow books from either Searching to find book or from view entire catalog. User must have a Member ID before borrowing a book.
+BORROWING A BOOK
 
-Once ID has been assigned to user, borrowing a book will be available.
+	User can borrow books from either Searching to find book or from view entire catalog. 
 
-When a member borrows a book, the available quantity for each book will be reduced.
 
-All borrows and returns rely on member ID. This information is then separatly stored in loanLibrary dictionary.
-'''
+		- Search Catalog > Obama > Select Book > Borrow Book > Enter Member ID
+		- View Full Catalog > Select Book > Borrow Book > Enter Member ID
+
+
+	User must have a Member ID before borrowing a book. Non Registered Users will be unable to book book.
+	Once ID has been assigned to user, borrowing a book will be available.
+
+	When a member borrows a book, the available quantity for each book will be reduced.
+
+	All borrows and returns rely on member ID. This information is then separatly stored in loanLibrary dictionary.
+____________________________________________________'''
+
 def borrowBook(catalog, initialise):
 	memberID = int(input('Enter Member ID:'))
 	memberName = ''
@@ -246,12 +262,20 @@ def borrowBook(catalog, initialise):
 			menu()
 
 '''
-User can return books from either Searching to find book or from view entire catalog. User must enter their membership ID in order to return book.
+RETURNING A BOOK
 
-All borrows and returns rely on member ID. This information is then separatly stored in loanLibrary dictionary.
+	User can return books from either Searching to find book or from view entire catalog. 
 
-Users cannot return a book if no evidence of borrow can be found in loanLibrary dictionary. User will be asked to check membership ID is correct.
-'''
+		- Search Catalog > Harper Lee > Select Book > Return Book > Enter Member ID
+		- View Full Catalog > Select Book > Return Book > Enter Member ID
+
+	User must enter their membership ID in order to return book.
+
+	All borrows and returns rely on member ID. This information is then separatly stored in loanLibrary dictionary.
+
+	Users cannot return a book if no evidence of a borrow can be found in loanLibrary dictionary. User will be asked to check membership ID is correct.
+____________________________________________________'''
+
 def returnBook(catalog, initialise):
 	memberID = int(input('Enter Member ID:'))
 	bookISBN = list(catalog)[initialise-1]
@@ -275,8 +299,12 @@ def returnBook(catalog, initialise):
 			menu()
 
 '''
-Adding a member is necessary to borrow and return any book. This can available in the membership option.
-Member ID's are unique and auto increment from last member added.
+ADDING A MEMBER
+
+	Adding a member is necessary to borrow and return any book. This can available in the membership option.
+	Member ID's are unique and auto increment from last member added.
+
+		- Membership > Add Member > Enter Full Name
 '''
 def addMember():
 	print('Add Member')
@@ -325,8 +353,13 @@ def getMember():
 			elif initialise == 2:
 				menu()
 '''
-Members Name can be edited by Membership > View Members > Edit Member
-Members ID is non-editable and is unique for each user.
+EDITING A MEMBER
+
+	Members Name can be edited by 
+
+		- Membership > View Members > Edit Member
+
+	Members ID is non-editable and is unique for each user.
 '''
 def editMember(initialise):
 	memberID = list(memberLibrary)[initialise-1]
@@ -335,8 +368,13 @@ def editMember(initialise):
 	menu()
 
 '''
-Members Name can be deleted by Membership > View Members > Edit Member
-Users will be prompted to confirm deletion.
+DELETE A MEMBER
+	
+	Members can be deleted by 
+
+		- Membership > View Members > Delete Member
+
+	Users will be prompted to confirm deletion.
 '''
 def deleteMember(initialise):
 	memberID = list(memberLibrary)[initialise-1]
@@ -351,9 +389,14 @@ def deleteMember(initialise):
 	else:
 		menu()
 '''
-All books are editable, besides unique ISBN codes.
-Users can edit Title, Authors, Release Date and Quantity of books.
-Users can edit books through either search function or View Full Catalog > Select Book > Edit Book > Edit Title etc.
+EDITING A BOOK
+
+	All books are editable, besides unique ISBN codes.
+	Users can edit Title, Authors, Release Date and Quantity of books.
+	Users can edit books through either 
+
+		- Search Catalog > Harper Lee > Select Book > Edit Title etc.
+		- View Full Catalog > Select Book > Edit Book > Edit Title etc.
 '''
 def editBook(catalog, initialise):
 	bookISBN = list(catalog)[initialise-1]
@@ -389,8 +432,13 @@ def editBook(catalog, initialise):
 		if initialise == 0:
 			menu()		
 '''
-All books can be deleted. 
-Books can be deleted from Search Function or View Full Catalog > Select Book > Delete Book
+DELETING A BOOK
+
+	All books can be deleted. Books can be deleted by 
+
+		- Search Catalog > Harper Lee > Select Book > Delete Book
+		- View Full Catalog > Select Book > Edit Book > Delete Book
+
 Users will be prompted to confirm deletion.
 '''
 def deleteBook(catalog, initialise):
@@ -416,10 +464,7 @@ key1004 = add_book('ISBN:9780980200450', 'Educated: A Memoir', 'Tara Westover', 
 key1005 = add_book('ISBN:9780980200451', 'Where the Crawdads Sing', 'Delia Owens', '2020', 11)
 
 '''
-Menu and GUI is power by small lightweight curses library, Pick.
-Pick is used to help create curses based interactive selection list in the terminal.
-Documentation can be found here - https://pypi.org/project/pick/
-Users must install Pick by pip install pick
+GUI and Menu Handling.
 '''
 def menu():
 	os.system('clear')
