@@ -5,6 +5,7 @@ import json
 from pick import pick
 
 memberID = 1000
+selectedBook = 0
 
 libCatalog = dict()
 fetchedResults = dict()
@@ -14,31 +15,38 @@ line_break = '-' * 40
 
 
 def add_book(key, bookTitle, bookAuthor, bookReleaseDate, bookQuantity):
-	libCatalog[key] = [bookTitle, bookAuthor, bookReleaseDate, bookQuantity]
+	libCatalog[key] = [bookTitle.upper(), bookAuthor.upper(), bookReleaseDate.upper(), bookQuantity]
+
 
 def add_to_catalog():
 	print('ADD BOOK')
 	print(line_break)
 	isbn_initial = input('Book ISBN: ')
 	isbn = isbn_initial.replace('-', '')
-	bookQuantity = input('Book Quantity: ')
+	bookQuantity = int(input('Book Quantity: '))
 
 	api = requests.get('https://openlibrary.org/api/books?bibkeys=ISBN:{}&jscmd=data&format=json'.format(isbn))
 	data = api.json()
 	key = 'ISBN:{}'.format(isbn)
+	print(api.status_code)
+	if api.status_code == 200 and len(data) >= 1:
+		add_book(key, data[key]['title'], data[key]['authors'][0]['name'], data[key]['publish_date'], bookQuantity)
 
-	add_book(key, data[key]['title'], data[key]['authors'][0]['name'], data[key]['publish_date'], bookQuantity)
+		title = '\nBook {} has been added to Catalog.\n\nWould you like to add an additional book?'.format(key[5:])
+		options = ['Yes', 'No']
+		option, initialise = pick(options, title)
 
-	title = '\nBook {} has been added to Catalog.\n\nWould you like to add an additional book?'.format(key[5:])
-	options = ['Yes', 'No']
-	option, initialise = pick(options, title)
-
-	if initialise == 0:
-		os.system('clear')
-		add_to_catalog()
-	elif initialise == 1:
-		menu()
-
+		if initialise == 0:
+			os.system('clear')
+			add_to_catalog()
+		elif initialise == 1:
+			menu()
+	else:
+		title = 'Invalid ISBN Code. Please try again'
+		options = ['GO BACK TO MENU']
+		option, initialise = pick(options, title)
+		if initialise == 0:
+			menu()
 
 def get_catalog():
 	print(line_break)
@@ -49,21 +57,19 @@ def get_catalog():
 	for key in libCatalog:
 		string = '{:<16s}{:<40s}{:<30s}{:<15s}{:<5d}'.format(key[5:], libCatalog[key][0], libCatalog[key][1], libCatalog[key][2], libCatalog[key][3])
 		options.append(string)
-	option, initialise = pick(options, title)
+	option, selectedBook = pick(options, title)
 
-	if initialise == 0:
+	if selectedBook == 0:
 		menu()
-	elif initialise >=1:
+	elif selectedBook >=1:
 		title = 'What would like to do?'
 		options = ['Borrow Book', 'Return Book']
 		option, initialise = pick(options, title)
 
 		if initialise == 0:
-			borrowBook(initialise)
+			borrowBook(libCatalog, selectedBook)
 		elif initialise == 1:
-			returnBook(initialise)
-
-		# loanLibary.append(loanDetails)
+			returnBook(libCatalog, selectedBook)
 
 
 def search_catalog(libCatalog, value):
@@ -91,36 +97,73 @@ def search_catalog(libCatalog, value):
 		options.append(string)
 		fetchCounter += 1
 	options.append('{} Results Found'.format(fetchCounter))
-	option, initialise = pick(options, title)
-	print(len(options))
-	if initialise == 0 or initialise == len(options) - 1:
+	option, selectedBook = pick(options, title)
+
+	if selectedBook == 0 or selectedBook == len(options) - 1:
 		menu()
+	elif selectedBook >=1:
+		title = 'What would like to do?'
+		options = ['Borrow Book', 'Return Book']
+		option, initialise = pick(options, title)
+
+		if initialise == 0:
+			borrowBook(fetchedResults, selectedBook)
+		elif initialise == 1:
+			returnBook(fetchedResults, selectedBook)
 		
 
-def borrowBook(initialise):
+def borrowBook(catalog, initialise):
 	memberID = int(input('Enter Member ID:'))
 	memberName = ''
-	bookISBN = list(libCatalog)[initialise+1]
-	bookTitle = libCatalog[bookISBN][0]
+	bookISBN = list(catalog)[initialise-1]
+	bookTitle = catalog[bookISBN][0]
 
-	for memberID in memberLibrary:
+	if memberID not in memberLibrary:
+		title = 'Member {} does not exist. Please add member before loaning book.'.format(memberID)
+		options = ['GO BACK TO MENU']
+		option, initialise = pick(options, title)
+		if initialise == 0:
+			menu()
+	else:
 		memberID = memberID
 		memberName = memberLibrary[memberID][0]
 
-	loanDetails = '{}{}{}{}'.format(memberID, memberName, bookISBN, bookTitle)
-	reduceQuantity = int(libCatalog[bookISBN][-1]) - 1
-	libCatalog[bookISBN][-1] = reduceQuantity
-	loanLibary[memberID] = [memberName, bookISBN, bookTitle]
-	menu()
+		loanDetails = '{}{}{}{}'.format(memberID, memberName, bookISBN, bookTitle)
 
-def returnBook(initialise):
+		for bookISBN in libCatalog:
+			reduceQuantity = int(libCatalog[bookISBN][-1]) - 1
+			libCatalog[bookISBN][-1] = reduceQuantity
+
+		loanLibary[memberID] = [memberName, bookISBN, bookTitle]
+
+		title = 'Member {} has successfully loaned {}.'.format(memberID, bookTitle)
+		options = ['GO BACK TO MENU']
+		option, initialise = pick(options, title)
+		if initialise == 0:
+			menu()
+
+
+def returnBook(catalog, initialise):
 	memberID = int(input('Enter Member ID:'))
-	bookISBN = list(libCatalog)[initialise]
-	print(bookISBN)
-	increaseQuantity = int(libCatalog[bookISBN][-1]) + 1
-	libCatalog[bookISBN][-1] = increaseQuantity
-	loanLibary.pop(memberID, None)
-	menu()
+	bookISBN = list(catalog)[initialise-1]
+
+	if memberID not in loanLibary:
+		title = 'Member {} has not loan this book. Please check Member ID.'.format(memberID)
+		options = ['GO BACK TO MENU']
+		option, initialise = pick(options, title)
+		if initialise == 0:
+			menu()
+	else:
+		for bookISBN in libCatalog:
+			increaseQuantity = int(libCatalog[bookISBN][-1]) + 1
+			libCatalog[bookISBN][-1] = increaseQuantity
+			loanLibary.pop(memberID, None)
+
+		title = 'Book has been successfully returned.'
+		options = ['GO BACK TO MENU']
+		option, initialise = pick(options, title)
+		if initialise == 0:
+			menu()
 
 
 def addMember():
@@ -145,6 +188,7 @@ def addMember():
 	elif initialise == 1:
 		menu()
 
+
 def getMember():
 	title = '{:<18s}{:<42s}'.format('  Member ID', 'Name')
 	options = ['[GO BACK TO MENU]']
@@ -157,31 +201,38 @@ def getMember():
 	if initialise == 0:
 		menu()
 
+
 key1001 = add_book('ISBN:9780980200447', 'Now Read This', 'Nancy Pearl', '2018', 8)
 key1002 = add_book('ISBN:9780980200448', 'Becoming Fiction', 'Michelle Obama', '2018', 15)
 key1003 = add_book('ISBN:9780980200449', 'To Kill A Mocking Bird', 'Harper Lee', '1960', 4)
 
+
 def menu():
 	os.system('clear')
-	title = 'Library System 1.0'
-	options = ['Add Book', 'Search Catalog', 'Membership', 'View Catalog', 'Exit']
+	title = 'Library System 1.0 by Andrew Gorman'
+	options = ['Add Book', 'Search Catalog', 'Borrows and Returns', 'Memberships', 'View Full Catalog', 'Exit']
 	option, initialise = pick(options, title)
 	gui(initialise)
 
 
 def gui(initialise):
-	# initialise = input('\nPress A to add Book: \nPress S to Search Catalog: \nPress B to Borrow Book: \nPress V to view Catalog: \nPress Z to cancel: \n\nOption:').upper()
 
 	if initialise == 0:
 		add_to_catalog()
 
 	elif initialise == 1:
-		value = input('Search Catalog: ')
+		os.system('clear')
+		value = input('Search Catalog: ').upper()
 		search_catalog(libCatalog, value)
 		print('Press M to go back to menu')
 
 	elif initialise == 2:
+		os.system('clear')
+		value = input('Find Book to Borrow/Return:')
+		search_catalog(libCatalog, value)
 
+	elif initialise == 3:
+		os.system('clear')
 		title = 'Membership'
 		options = ['View Members', 'Add Member', 'Go Back']
 		option, initialise = pick(options, title)
@@ -193,12 +244,12 @@ def gui(initialise):
 		elif initialise == 2:
 			menu()
 
-	elif initialise == 3:
+	elif initialise == 4:
 		get_catalog()
 		print(line_break)
 		escape_input = input().upper()
 
-	elif initialise == 4:
+	elif initialise == 5:
 		sys.exit(0)
 
 menu()
