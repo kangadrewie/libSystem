@@ -15,7 +15,7 @@ line_break = '-' * 40
 
 '''
 HOW TO USE
-
+	
 	Libsys.py is a shell script that can be run in terminal or IDE. It's functionality ranges from
 		- Automatic ISBN Search retrieval using Open Library's RESTful API
 		- Manual Book Import
@@ -23,10 +23,15 @@ HOW TO USE
 		- Add/Edit/Delete Members
 		- Recursive Search Feature
 		- All Users can Borrow and Return Book
+	
+	Prior to using, users must install pick by 
 
-	Prior to using, users must install pick by pip install pick.
+		pip install pick
+
 	Pick a lightweight library that is used to help create curses based interactive selection list in the terminal.
 	Documentation can be found here - https://pypi.org/project/pick/
+
+	Use Arrow Keys and Enter to navigate menu system.
 ____________________________________________________
 
 ADDING A BOOK
@@ -36,6 +41,13 @@ ADDING A BOOK
 		- First is manually entering the books details incl. ISBN, Title, Author, Release Date, and Quantity, by Add Book > Manually Add Book. This is then stored in a libCatalog dict.
 
 		- Alternatively, users can Add Book > Automatic ISBN Search which will search Open Librarys RESTful API and return the above information.
+
+			Example ISBN's
+
+				9780812984965
+				0544107713
+				9780670021741
+				9781846590320
 
 		Data is returned in JSON format, then parse and stored in library catalog dictionary.
 
@@ -232,6 +244,7 @@ BORROWING A BOOK
 ____________________________________________________'''
 
 def borrowBook(catalog, initialise):
+	print('Users must have a registered Member ID to borrow a book. Member IDs are a 4 digit number, ie. 1002\n')
 	memberID = int(input('Enter Member ID:'))
 	memberName = ''
 	bookISBN = list(catalog)[initialise-1]
@@ -262,7 +275,7 @@ def borrowBook(catalog, initialise):
 			if initialise == 0:
 				menu()
 		else:
-			title = 'Unfortuntaly, {} is currently unavailable.'.format(bookTitle)
+			title = 'Unfortunately, {} is currently unavailable.'.format(bookTitle)
 			options = ['Return to Menu']
 			option, initialise = pick(options, title)
 			if initialise == 0:
@@ -290,7 +303,7 @@ def returnBook(catalog, initialise):
 	bookISBN = list(catalog)[initialise-1]
 
 	if memberID not in loanLibary:
-		title = 'Member {} has not loan this book. Please check Member ID.'.format(memberID)
+		title = 'Member {} has not borrowed this book. Please check Member ID.'.format(memberID)
 		options = ['Return to Menu']
 		option, initialise = pick(options, title)
 		if initialise == 0:
@@ -429,7 +442,7 @@ def editBook(catalog, initialise):
 			menu()
 		elif initialise == 3:
 			newQuantity = int(input('Enter Quantity:'))
-			if newQuantity > 0:
+			if newQuantity >= 0:
 				libCatalog[bookISBN][3] = newQuantity
 				menu()
 			else:
@@ -479,6 +492,7 @@ key1002 = add_book('ISBN:9780980200448', 'Becoming', 'Michelle Obama', '2018', 1
 key1003 = add_book('ISBN:9780980200449', 'To Kill A Mocking Bird', 'Harper Lee', '1960', 4)
 key1004 = add_book('ISBN:9780980200450', 'Educated: A Memoir', 'Tara Westover', '2019', 9)
 key1005 = add_book('ISBN:9780980200451', 'Where the Crawdads Sing', 'Delia Owens', '2020', 11)
+key1006 = add_book('ISBN:9780980200452', 'She Said', 'Jodi Kantor, Megan Twohey', '2019', 0)
 
 '''
 GUI and Menu Handling.

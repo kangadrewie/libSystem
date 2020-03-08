@@ -9,9 +9,14 @@ HOW TO USE
 		- Recursive Search Feature
 		- All Users can Borrow and Return Book
 
-	Prior to using, users must install pick by pip install pick.
+	Prior to using, users must install pick by 
+
+		pip install pick
+		
 	Pick a lightweight library that is used to help create curses based interactive selection list in the terminal.
 	Documentation can be found here - https://pypi.org/project/pick/
+
+	Use Arrow Keys and Enter to navigate menu system.
 ____________________________________________________
 
 
@@ -22,6 +27,13 @@ ADDING A BOOK
 		- First is manually entering the books details incl. ISBN, Title, Author, Release Date, and Quantity, by Add Book > Manually Add Book. This is then stored in a libCatalog dict.
 
 		- Alternatively, users can Add Book > Automatic ISBN Search which will search Open Librarys RESTful API and return the above information.
+
+			Example ISBN's
+			
+				9780812984965
+				0544107713
+				9780670021741
+				9781846590320
 
 		Data is returned in JSON format, then parse and stored in library catalog dictionary.
 
