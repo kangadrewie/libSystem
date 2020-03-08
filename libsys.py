@@ -17,36 +17,75 @@ line_break = '-' * 40
 def add_book(key, bookTitle, bookAuthor, bookReleaseDate, bookQuantity):
 	libCatalog[key] = [bookTitle.upper(), bookAuthor.upper(), bookReleaseDate.upper(), bookQuantity]
 
+def manualAddBook():
+	os.system('clear')
+	for i in range(1):
+		key = input('Book ISBN: ')
+		bookTitle = input('Book Title: ')
+		bookAuthor = input('Book Author: ')
+		bookReleaseDate = input('Book Release Date: ')
+		bookQuantity = int(input('Book Quantity: '))
+	add_book(key, bookTitle, bookAuthor, bookReleaseDate, bookQuantity)
+	menu()
 
 def add_to_catalog():
-	print('ADD BOOK')
-	print(line_break)
-	isbn_initial = input('Book ISBN: ')
-	isbn = isbn_initial.replace('-', '')
-	bookQuantity = int(input('Book Quantity: '))
+	title = 'ADD BOOK'
+	options = ['Automatic ISBN Search', 'Enter Book Details Manually']
 
-	api = requests.get('https://openlibrary.org/api/books?bibkeys=ISBN:{}&jscmd=data&format=json'.format(isbn))
-	data = api.json()
-	key = 'ISBN:{}'.format(isbn)
-	print(api.status_code)
-	if api.status_code == 200 and len(data) >= 1:
-		add_book(key, data[key]['title'], data[key]['authors'][0]['name'], data[key]['publish_date'], bookQuantity)
+	option, initialise = pick(options, title)
 
-		title = '\nBook {} has been added to Catalog.\n\nWould you like to add an additional book?'.format(key[5:])
-		options = ['Yes', 'No']
-		option, initialise = pick(options, title)
-
+	try:
 		if initialise == 0:
-			os.system('clear')
-			add_to_catalog()
+			isbn_initial = input('Book ISBN: ')
+			isbn = isbn_initial.replace('-', '')
+			bookQuantity = int(input('Book Quantity: '))
+
+			api = requests.get('https://openlibrary.org/api/books?bibkeys=ISBN:{}&jscmd=data&format=json'.format(isbn))
+			data = api.json()
+			key = 'ISBN:{}'.format(isbn)
+			print(api.status_code)
+			if api.status_code == 200 and len(data) >= 1:
+				add_book(key, data[key]['title'], data[key]['authors'][0]['name'], data[key]['publish_date'], bookQuantity)
+
+				title = '\nBook {} has been added to Catalog.\n\nWould you like to add an additional book?'.format(key[5:])
+				options = ['Yes', 'No']
+				option, initialise = pick(options, title)
+
+				if initialise == 0:
+					os.system('clear')
+					add_to_catalog()
+				elif initialise == 1:
+					menu()
+			else:
+				title = 'Invalid ISBN Code. Please try again'
+				options = ['Enter Book Details Manually', 'Return to Menu']
+				option, initialise = pick(options, title)
+				
+				if initialise == 0:
+					manualAddBook()
+
+				elif initialise == 1:
+					menu()
+		else:
+			manualAddBook()
+	except KeyError:
+		title = 'Unable to import book.'
+		options = ['Enter Book Details Manually', 'Return to Menu']
+		option, initialise = pick(options, title)
+		
+		if initialise == 0:
+			manualAddBook()
+
 		elif initialise == 1:
 			menu()
-	else:
-		title = 'Invalid ISBN Code. Please try again'
-		options = ['GO BACK TO MENU']
+	except ValueError:
+		title = 'Invalid Entry. Please ensure input is valid.'
+		options = ['Return to Menu']
 		option, initialise = pick(options, title)
+		
 		if initialise == 0:
-			menu()
+			menu()	
+
 
 def get_catalog():
 	print(line_break)
@@ -81,7 +120,7 @@ def get_catalog():
 def search_catalog(libCatalog, value):
 
 	fetchCounter = 0
-
+	fetchedResults = dict()
 	for key in libCatalog:
 		index = 0
 		if value == key:
@@ -109,13 +148,19 @@ def search_catalog(libCatalog, value):
 		menu()
 	elif selectedBook >=1:
 		title = 'What would like to do?'
-		options = ['Borrow Book', 'Return Book']
+		options = ['Edit Book', 'Borrow Book', 'Return Book', 'Delete Book', 'Return to Menu']
 		option, initialise = pick(options, title)
 
-		if initialise == 0:
+		if initialise == 1:
 			borrowBook(fetchedResults, selectedBook)
-		elif initialise == 1:
+		elif initialise == 2:
 			returnBook(fetchedResults, selectedBook)
+		elif initialise == 0:
+			editBook(fetchedResults, selectedBook)
+		elif initialise == 3:
+			deleteBook(fetchedResults, selectedBook)
+		elif initialise == 4:
+			menu()
 		
 
 def borrowBook(catalog, initialise):
@@ -181,7 +226,7 @@ def addMember():
 
 	print('Membership ID', memberID)
 
-	name = input('Member Name:')
+	name = input('Member Name:').upper()
 	memberLibrary[memberID] = [name]
 
 	title = '\nMember {} has been added to Catalog.\n\nWould you like to add an additional Member?'.format(name)
@@ -202,9 +247,36 @@ def getMember():
 		string = '{:<16d}{:<40s}'.format(key, memberLibrary[key][0])
 		options.append(string)
 
+	option, selectedMember = pick(options, title)
+	if selectedMember == 0:
+		menu()
+	elif selectedMember >=1:
+			title = 'What would like to do?'
+			options = ['Edit Member', 'Delete Member']
+			option, initialise = pick(options, title)
+
+			if initialise == 0:
+				editMember(selectedMember)
+			elif initialise == 1:
+				deleteMember(selectedMember)
+
+
+def editMember(initialise):
+	memberID = list(memberLibrary)[initialise-1]
+	editName = input('Edit Name:')
+	memberLibrary[memberID][0] = editName.upper()
+	menu()
+
+def deleteMember():
+	title = 'Are you sure you want to delete Member {}'.format(memberLibrary[initialise-1][0])
+	options = ['Yes', 'No']
+
 	option, initialise = pick(options, title)
-	print(len(options))
+
 	if initialise == 0:
+		memberLibrary.pop(memberLibrary[initialise-1][0], None)
+		menu()
+	else:
 		menu()
 
 def editBook(catalog, initialise):
@@ -214,24 +286,32 @@ def editBook(catalog, initialise):
 
 	option, initialise = pick(options, title)
 
-	if initialise == 0:
-		newTitle = input('Enter Title:')
-		libCatalog[bookISBN][0] = newTitle.upper()
-		menu()
-	elif initialise == 1:
-		newAuthor = input('Enter Author(s):')
-		libCatalog[bookISBN][1] = newAuthor.upper()
-		menu()
-	elif initialise == 2:
-		newReleaseDate = input('Enter Release Date:')
-		libCatalog[bookISBN][2] = newReleaseDate.upper()
-		menu()
-	elif initialise == 3:
-		newQuantity = int(input('Enter Quantity:'))
-		libCatalog[bookISBN][3] = newQuantity
-		menu()
-	elif initialise == 4:
-		menu()
+	try:
+		if initialise == 0:
+			newTitle = input('Enter Title:')
+			libCatalog[bookISBN][0] = newTitle.upper()
+			menu()
+		elif initialise == 1:
+			newAuthor = input('Enter Author(s):')
+			libCatalog[bookISBN][1] = newAuthor.upper()
+			menu()
+		elif initialise == 2:
+			newReleaseDate = input('Enter Release Date:')
+			libCatalog[bookISBN][2] = newReleaseDate.upper()
+			menu()
+		elif initialise == 3:
+			newQuantity = int(input('Enter Quantity:'))
+			libCatalog[bookISBN][3] = newQuantity
+			menu()
+		elif initialise == 4:
+			menu()
+	except ValueError:
+		title = 'Invalid Entry. Please ensure Quantity is an valid integer.'
+		options = ['Return to Menu']
+		option, initialise = pick(options, title)
+		
+		if initialise == 0:
+			menu()		
 
 def deleteBook(catalog, initialise):
 	bookISBN = list(catalog)[initialise-1]
@@ -247,7 +327,7 @@ def deleteBook(catalog, initialise):
 		menu()
 
 key1001 = add_book('ISBN:9780980200447', 'Now Read This', 'Nancy Pearl', '2018', 8)
-key1002 = add_book('ISBN:9780980200448', 'Becoming Fiction', 'Michelle Obama', '2018', 15)
+key1002 = add_book('ISBN:9780980200448', 'Becoming', 'Michelle Obama', '2018', 15)
 key1003 = add_book('ISBN:9780980200449', 'To Kill A Mocking Bird', 'Harper Lee', '1960', 4)
 
 
@@ -277,7 +357,7 @@ def gui(initialise):
 	elif initialise == 3:
 		os.system('clear')
 		title = 'Membership'
-		options = ['View Members', 'Add Member', 'Go Back']
+		options = ['View Members', 'Add Member', 'Return to Menu']
 		option, initialise = pick(options, title)
 
 		if initialise == 0:
