@@ -226,7 +226,7 @@ BORROWING A BOOK
 	User must have a Member ID before borrowing a book. Non Registered Users will be unable to book book.
 	Once ID has been assigned to user, borrowing a book will be available.
 
-	When a member borrows a book, the available quantity for each book will be reduced.
+	When a member borrows a book, the available quantity for each book will be reduced. Users will be unable to borrow a book that has a quantity of zero. Users will be prompt that book is currently unavailable.
 
 	All borrows and returns rely on member ID. This information is then separatly stored in loanLibrary dictionary.
 ____________________________________________________'''
@@ -249,17 +249,24 @@ def borrowBook(catalog, initialise):
 
 		loanDetails = '{}{}{}{}'.format(memberID, memberName, bookISBN, bookTitle)
 
-		for bookISBN in libCatalog:
-			reduceQuantity = int(libCatalog[bookISBN][-1]) - 1
-			libCatalog[bookISBN][-1] = reduceQuantity
+		if libCatalog[bookISBN][-1] > 0:
+			if bookISBN in libCatalog:
+				reduceQuantity = int(libCatalog[bookISBN][-1]) - 1
+				libCatalog[bookISBN][-1] = reduceQuantity
 
-		loanLibary[memberID] = [memberName, bookISBN, bookTitle]
+			loanLibary[memberID] = [memberName, bookISBN, bookTitle]
 
-		title = 'Member {} has successfully loaned {}.'.format(memberID, bookTitle)
-		options = ['GO BACK TO MENU']
-		option, initialise = pick(options, title)
-		if initialise == 0:
-			menu()
+			title = 'Member {} has successfully loaned {}.'.format(memberID, bookTitle)
+			options = ['Return to Menu']
+			option, initialise = pick(options, title)
+			if initialise == 0:
+				menu()
+		else:
+			title = 'Unfortuntaly, {} is currently unavailable.'.format(bookTitle)
+			options = ['Return to Menu']
+			option, initialise = pick(options, title)
+			if initialise == 0:
+				menu()
 
 '''
 RETURNING A BOOK
@@ -274,6 +281,8 @@ RETURNING A BOOK
 	All borrows and returns rely on member ID. This information is then separatly stored in loanLibrary dictionary.
 
 	Users cannot return a book if no evidence of a borrow can be found in loanLibrary dictionary. User will be asked to check membership ID is correct.
+
+	Book available quantity will be increase by 1 once book is returned.
 ____________________________________________________'''
 
 def returnBook(catalog, initialise):
@@ -282,18 +291,18 @@ def returnBook(catalog, initialise):
 
 	if memberID not in loanLibary:
 		title = 'Member {} has not loan this book. Please check Member ID.'.format(memberID)
-		options = ['GO BACK TO MENU']
+		options = ['Return to Menu']
 		option, initialise = pick(options, title)
 		if initialise == 0:
 			menu()
 	else:
-		for bookISBN in libCatalog:
+		if bookISBN in libCatalog:
 			increaseQuantity = int(libCatalog[bookISBN][-1]) + 1
 			libCatalog[bookISBN][-1] = increaseQuantity
 			loanLibary.pop(memberID, None)
 
 		title = 'Book has been successfully returned.'
-		options = ['GO BACK TO MENU']
+		options = ['Return to Menu']
 		option, initialise = pick(options, title)
 		if initialise == 0:
 			menu()
@@ -420,8 +429,16 @@ def editBook(catalog, initialise):
 			menu()
 		elif initialise == 3:
 			newQuantity = int(input('Enter Quantity:'))
-			libCatalog[bookISBN][3] = newQuantity
-			menu()
+			if newQuantity > 0:
+				libCatalog[bookISBN][3] = newQuantity
+				menu()
+			else:
+				title = 'Invalid Entry. Please ensure Quantity is an valid integer.'
+				options = ['Return to Menu']
+				option, initialise = pick(options, title)
+		
+				if initialise == 0:
+					menu()		
 		elif initialise == 4:
 			menu()
 	except ValueError:

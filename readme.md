@@ -51,7 +51,7 @@ BORROWING A BOOK
 	User must have a Member ID before borrowing a book. Non Registered Users will be unable to book book.
 	Once ID has been assigned to user, borrowing a book will be available.
 
-	When a member borrows a book, the available quantity for each book will be reduced.
+	When a member borrows a book, the available quantity for each book will be reduced. Users will be unable to borrow a book that has a quantity of zero. Users will be prompt that book is currently unavailable.
 
 	All borrows and returns rely on member ID. This information is then separatly stored in loanLibrary dictionary.
 ____________________________________________________
@@ -68,6 +68,8 @@ RETURNING A BOOK
 	All borrows and returns rely on member ID. This information is then separatly stored in loanLibrary dictionary.
 
 	Users cannot return a book if no evidence of a borrow can be found in loanLibrary dictionary. User will be asked to check membership ID is correct.
+
+	Book available quantity will be increase by 1 once book is returned.
 ____________________________________________________
 
 ADDING A MEMBER
