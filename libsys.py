@@ -39,7 +39,7 @@ ADDING A BOOK
 
 		Data is returned in JSON format, then parse and stored in library catalog dictionary.
 
-		Exceptions are configured to catch any ISBN that returns no data. Or is simply invalid ie. KeyError, ValueError.
+		Exceptions are configured to catch any ISBN that returns no data. Or is simply invalid ie. KeyError, ValueError. Exceptions do not handle manual input from User. User must ensure ISBN code is valid when manually entering data.
 ____________________________________________________'''
 
 def add_book(key, bookTitle, bookAuthor, bookReleaseDate, bookQuantity):
