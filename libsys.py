@@ -30,7 +30,7 @@ def manualAddBook():
 
 def add_to_catalog():
 	title = 'ADD BOOK'
-	options = ['Automatic ISBN Search', 'Enter Book Details Manually']
+	options = ['Automatic ISBN Search', 'Enter Book Details Manually', 'Return to Menu']
 
 	option, initialise = pick(options, title)
 
@@ -66,8 +66,10 @@ def add_to_catalog():
 
 				elif initialise == 1:
 					menu()
-		else:
+		elif initialise == 1:
 			manualAddBook()
+		elif initialise == 2:
+			menu()
 	except KeyError:
 		title = 'Unable to import book.'
 		options = ['Enter Book Details Manually', 'Return to Menu']
@@ -252,13 +254,15 @@ def getMember():
 		menu()
 	elif selectedMember >=1:
 			title = 'What would like to do?'
-			options = ['Edit Member', 'Delete Member']
+			options = ['Edit Member', 'Delete Member', 'Return to Menu']
 			option, initialise = pick(options, title)
 
 			if initialise == 0:
 				editMember(selectedMember)
 			elif initialise == 1:
 				deleteMember(selectedMember)
+			elif initialise == 2:
+				menu()
 
 
 def editMember(initialise):
@@ -267,14 +271,15 @@ def editMember(initialise):
 	memberLibrary[memberID][0] = editName.upper()
 	menu()
 
-def deleteMember():
-	title = 'Are you sure you want to delete Member {}'.format(memberLibrary[initialise-1][0])
+def deleteMember(initialise):
+	memberID = list(memberLibrary)[initialise-1]
+	title = 'Are you sure you want to delete Member {}'.format(memberID)
 	options = ['Yes', 'No']
 
 	option, initialise = pick(options, title)
 
 	if initialise == 0:
-		memberLibrary.pop(memberLibrary[initialise-1][0], None)
+		memberLibrary.pop(memberID, None)
 		menu()
 	else:
 		menu()
@@ -326,10 +331,12 @@ def deleteBook(catalog, initialise):
 	else:
 		menu()
 
+
 key1001 = add_book('ISBN:9780980200447', 'Now Read This', 'Nancy Pearl', '2018', 8)
 key1002 = add_book('ISBN:9780980200448', 'Becoming', 'Michelle Obama', '2018', 15)
 key1003 = add_book('ISBN:9780980200449', 'To Kill A Mocking Bird', 'Harper Lee', '1960', 4)
-
+key1004 = add_book('ISBN:9780980200450', 'Educated: A Memoir', 'Tara Westover', '2019', 9)
+key1005 = add_book('ISBN:9780980200451', 'Where the Crawdads Sing', 'Delia Owens', '2020', 11)
 
 def menu():
 	os.system('clear')
@@ -342,6 +349,7 @@ def menu():
 def gui(initialise):
 
 	if initialise == 0:
+		os.system('clear')
 		add_to_catalog()
 
 	elif initialise == 1:
@@ -368,6 +376,7 @@ def gui(initialise):
 			menu()
 
 	elif initialise == 4:
+		os.system('clear')
 		get_catalog()
 
 	elif initialise == 5:
