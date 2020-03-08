@@ -13,8 +13,21 @@ loanLibary = dict()
 memberLibrary = dict()
 line_break = '-' * 40
 
-
 '''
+HOW TO USE
+
+Libsys.py is a shell script that can be run in terminal or IDE. It's functionality ranges from
+	- Automatic ISBN Search retrieval using Open Library's RESTful API
+	- Manual Book Import
+	- Add/Edit/Delete Books
+	- Add/Edit/Delete Members
+	- Recursive Search Feature
+	- All Users can Borrow and Return Book
+
+Prior to using, users must install pick by pip install pick.
+Pick a lightweight library that is used to help create curses based interactive selection list in the terminal.
+Documentation can be found here - https://pypi.org/project/pick/
+
 Users have two options to add a book.
 
 	- First is manually entering the books details incl. ISBN, Title, Author, Release Date, and Quantity, by Add Book > Manually Add Book. This is then stored in a libCatalog dict.
