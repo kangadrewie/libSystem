@@ -63,13 +63,19 @@ def get_catalog():
 		menu()
 	elif selectedBook >=1:
 		title = 'What would like to do?'
-		options = ['Borrow Book', 'Return Book']
+		options = ['Edit Book', 'Borrow Book', 'Return Book', 'Delete Book', 'Return to Menu']
 		option, initialise = pick(options, title)
 
-		if initialise == 0:
+		if initialise == 1:
 			borrowBook(libCatalog, selectedBook)
-		elif initialise == 1:
+		elif initialise == 2:
 			returnBook(libCatalog, selectedBook)
+		elif initialise == 0:
+			editBook(libCatalog, selectedBook)
+		elif initialise == 3:
+			deleteBook(libCatalog, selectedBook)
+		elif initialise == 4:
+			menu()
 
 
 def search_catalog(libCatalog, value):
@@ -201,6 +207,44 @@ def getMember():
 	if initialise == 0:
 		menu()
 
+def editBook(catalog, initialise):
+	bookISBN = list(catalog)[initialise-1]
+	title = 'ISBN Codes are non-editable.'
+	options = ['Edit Title', 'Edit Author', 'Edit Release Date', 'Edit Quantity', 'Return to Menu']
+
+	option, initialise = pick(options, title)
+
+	if initialise == 0:
+		newTitle = input('Enter Title:')
+		libCatalog[bookISBN][0] = newTitle.upper()
+		menu()
+	elif initialise == 1:
+		newAuthor = input('Enter Author(s):')
+		libCatalog[bookISBN][1] = newAuthor.upper()
+		menu()
+	elif initialise == 2:
+		newReleaseDate = input('Enter Release Date:')
+		libCatalog[bookISBN][2] = newReleaseDate.upper()
+		menu()
+	elif initialise == 3:
+		newQuantity = int(input('Enter Quantity:'))
+		libCatalog[bookISBN][3] = newQuantity
+		menu()
+	elif initialise == 4:
+		menu()
+
+def deleteBook(catalog, initialise):
+	bookISBN = list(catalog)[initialise-1]
+	title = 'Are you sure you want to delete book {}'.format(bookISBN)
+	options = ['Yes', 'No']
+
+	option, initialise = pick(options, title)
+
+	if initialise == 0:
+		libCatalog.pop(bookISBN, None)
+		menu()
+	else:
+		menu()
 
 key1001 = add_book('ISBN:9780980200447', 'Now Read This', 'Nancy Pearl', '2018', 8)
 key1002 = add_book('ISBN:9780980200448', 'Becoming Fiction', 'Michelle Obama', '2018', 15)
@@ -224,11 +268,10 @@ def gui(initialise):
 		os.system('clear')
 		value = input('Search Catalog: ').upper()
 		search_catalog(libCatalog, value)
-		print('Press M to go back to menu')
 
 	elif initialise == 2:
 		os.system('clear')
-		value = input('Find Book to Borrow/Return:')
+		value = input('Find Book to Borrow/Return:').upper()
 		search_catalog(libCatalog, value)
 
 	elif initialise == 3:
@@ -246,8 +289,6 @@ def gui(initialise):
 
 	elif initialise == 4:
 		get_catalog()
-		print(line_break)
-		escape_input = input().upper()
 
 	elif initialise == 5:
 		sys.exit(0)
