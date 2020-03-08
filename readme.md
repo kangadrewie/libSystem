@@ -112,5 +112,5 @@ DELETING A BOOK
 		- Search Catalog > Harper Lee > Select Book > Delete Book
 		- View Full Catalog > Select Book > Edit Book > Delete Book
 
-Users will be prompted to confirm deletion.
+	Users will be prompted to confirm deletion.
 
