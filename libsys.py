@@ -14,9 +14,22 @@ memberLibrary = dict()
 line_break = '-' * 40
 
 
+'''
+Users have two options to add a book.
+
+	- First is manually entering the books details incl. ISBN, Title, Author, Release Date, and Quantity, by Add Book > Manually Add Book. This is then stored in a libCatalog dict.
+
+	- Alternatively, users can Add Book > Automatic ISBN Search which will search Open Librarys RESTful API and return the above information.
+
+	Data is returned in JSON format, then parse and stored in library catalog dictionary.
+
+	Exceptions are configured to catch any ISBN that returns no data. Or is simply invalid ie. KeyError, ValueError.
+'''
+
 def add_book(key, bookTitle, bookAuthor, bookReleaseDate, bookQuantity):
 	libCatalog[key] = [bookTitle.upper(), bookAuthor.upper(), bookReleaseDate.upper(), bookQuantity]
 
+# Manual Add Function
 def manualAddBook():
 	os.system('clear')
 	for i in range(1):
@@ -28,6 +41,9 @@ def manualAddBook():
 	add_book(key, bookTitle, bookAuthor, bookReleaseDate, bookQuantity)
 	menu()
 
+'''
+API Handling
+'''
 def add_to_catalog():
 	title = 'ADD BOOK'
 	options = ['Automatic ISBN Search', 'Enter Book Details Manually', 'Return to Menu']
@@ -88,7 +104,12 @@ def add_to_catalog():
 		if initialise == 0:
 			menu()	
 
+'''
+Function to retrieve all booked currently stored on system to User Interface. 
 
+Books are formatted and sent to pick function for curses gui option. 
+User can use arrow keys or mouse wheel to select books and options.
+'''
 def get_catalog():
 	print(line_break)
 	title = '{:<18s}{:<40s}{:<30s}{:<15s}{}'.format('  ISBN', 'Title', 'Author', 'Release Date', 'Quantity')
@@ -118,6 +139,14 @@ def get_catalog():
 		elif initialise == 4:
 			menu()
 
+
+"""
+Search feature is suitable for various searches, not exclusively IBSN codes. It recursively searches each book to find match. If search value is not an ISBN key, it will search across the columns to find a match. If not match is found, it will continue onto next book, and repeat.
+
+Any books matched will be temporarily added to a fetchResults dict and will increment a counter, giving total results found. This is what is returned to User.
+
+Books that have been returned from search, can be borrowed/returned/edited and deleted by selecting specifc book.
+"""
 
 def search_catalog(libCatalog, value):
 
@@ -164,7 +193,15 @@ def search_catalog(libCatalog, value):
 		elif initialise == 4:
 			menu()
 		
+'''
+User can borrow books from either Searching to find book or from view entire catalog. User must have a Member ID before borrowing a book.
 
+Once ID has been assigned to user, borrowing a book will be available.
+
+When a member borrows a book, the available quantity for each book will be reduced.
+
+All borrows and returns rely on member ID. This information is then separatly stored in loanLibrary dictionary.
+'''
 def borrowBook(catalog, initialise):
 	memberID = int(input('Enter Member ID:'))
 	memberName = ''
@@ -195,7 +232,13 @@ def borrowBook(catalog, initialise):
 		if initialise == 0:
 			menu()
 
+'''
+User can return books from either Searching to find book or from view entire catalog. User must enter their membership ID in order to return book.
 
+All borrows and returns rely on member ID. This information is then separatly stored in loanLibrary dictionary.
+
+Users cannot return a book if no evidence of borrow can be found in loanLibrary dictionary. User will be asked to check membership ID is correct.
+'''
 def returnBook(catalog, initialise):
 	memberID = int(input('Enter Member ID:'))
 	bookISBN = list(catalog)[initialise-1]
@@ -218,7 +261,10 @@ def returnBook(catalog, initialise):
 		if initialise == 0:
 			menu()
 
-
+'''
+Adding a member is necessary to borrow and return any book. This can available in the membership option.
+Member ID's are unique and auto increment from last member added.
+'''
 def addMember():
 	print('Add Member')
 	print(line_break)
@@ -241,7 +287,9 @@ def addMember():
 	elif initialise == 1:
 		menu()
 
-
+'''
+All current registered members can be view from Membership > View Members
+'''
 def getMember():
 	title = '{:<18s}{:<42s}'.format('  Member ID', 'Name')
 	options = ['[GO BACK TO MENU]']
@@ -263,14 +311,20 @@ def getMember():
 				deleteMember(selectedMember)
 			elif initialise == 2:
 				menu()
-
-
+'''
+Members Name can be edited by Membership > View Members > Edit Member
+Members ID is non-editable and is unique for each user.
+'''
 def editMember(initialise):
 	memberID = list(memberLibrary)[initialise-1]
 	editName = input('Edit Name:')
 	memberLibrary[memberID][0] = editName.upper()
 	menu()
 
+'''
+Members Name can be deleted by Membership > View Members > Edit Member
+Users will be prompted to confirm deletion.
+'''
 def deleteMember(initialise):
 	memberID = list(memberLibrary)[initialise-1]
 	title = 'Are you sure you want to delete Member {}'.format(memberID)
@@ -283,7 +337,11 @@ def deleteMember(initialise):
 		menu()
 	else:
 		menu()
-
+'''
+All books are editable, besides unique ISBN codes.
+Users can edit Title, Authors, Release Date and Quantity of books.
+Users can edit books through either search function or View Full Catalog > Select Book > Edit Book > Edit Title etc.
+'''
 def editBook(catalog, initialise):
 	bookISBN = list(catalog)[initialise-1]
 	title = 'ISBN Codes are non-editable.'
@@ -317,7 +375,11 @@ def editBook(catalog, initialise):
 		
 		if initialise == 0:
 			menu()		
-
+'''
+All books can be deleted. 
+Books can be deleted from Search Function or View Full Catalog > Select Book > Delete Book
+Users will be prompted to confirm deletion.
+'''
 def deleteBook(catalog, initialise):
 	bookISBN = list(catalog)[initialise-1]
 	title = 'Are you sure you want to delete book {}'.format(bookISBN)
@@ -331,13 +393,21 @@ def deleteBook(catalog, initialise):
 	else:
 		menu()
 
-
+'''
+Some hardcoded books for demonstration purposes.
+'''
 key1001 = add_book('ISBN:9780980200447', 'Now Read This', 'Nancy Pearl', '2018', 8)
 key1002 = add_book('ISBN:9780980200448', 'Becoming', 'Michelle Obama', '2018', 15)
 key1003 = add_book('ISBN:9780980200449', 'To Kill A Mocking Bird', 'Harper Lee', '1960', 4)
 key1004 = add_book('ISBN:9780980200450', 'Educated: A Memoir', 'Tara Westover', '2019', 9)
 key1005 = add_book('ISBN:9780980200451', 'Where the Crawdads Sing', 'Delia Owens', '2020', 11)
 
+'''
+Menu and GUI is power by small lightweight curses library, Pick.
+Pick is used to help create curses based interactive selection list in the terminal.
+Documentation can be found here - https://pypi.org/project/pick/
+Users must install Pick by pip install pick
+'''
 def menu():
 	os.system('clear')
 	title = 'Library System 1.0 by Andrew Gorman'
