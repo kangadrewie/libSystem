@@ -1,7 +1,7 @@
 
 HOW TO USE
 
-	Libsys.py is a shell script that can be run in terminal or IDE. It's functionality ranges from
+	Libsys.py is a python script that can be run in terminal or IDE. It's functionality ranges from
 		- Automatic ISBN Search retrieval using Open Library's RESTful API
 		- Manual Book Import
 		- Add/Edit/Delete Books
